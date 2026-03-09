@@ -8,7 +8,6 @@ export const samplePresupuestos: Presupuesto[] = [
     estado: 'Pendiente',
     tiempoEntrega: '2 días hábiles',
     observaciones: 'Se recomienda revisión de frenos tras cambio de discos.',
-    condicionesServicio: 'Validez 10 días. Garantía de mano de obra por 30 días.',
     cliente: {
       nombre: 'Juan Pérez',
       rut: '12.345.678-9',
