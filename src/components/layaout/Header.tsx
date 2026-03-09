@@ -12,19 +12,21 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
         <Link to="/" className="flex min-w-0 items-center gap-3">
-          <img
-            src={logoSrc}
-            alt={settings.nombreEmpresa}
-            className="h-11 w-11 rounded-xl object-contain"
-          />
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <img
+              src={logoSrc}
+              alt={settings.nombreEmpresa}
+              className="h-10 w-10 object-contain"
+            />
+          </div>
 
-          <div className="min-w-0">
-            <div className="truncate text-lg font-bold text-slate-900">
+          <div className="min-w-0 leading-tight">
+            <div className="truncate text-xl font-bold text-slate-900">
               {settings.nombreEmpresa}
             </div>
-            <div className="truncate text-xs text-slate-500">
+            <div className="truncate text-sm text-slate-500">
               Gestión de presupuestos mecánicos
             </div>
           </div>

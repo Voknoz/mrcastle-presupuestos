@@ -4,23 +4,25 @@ import { Presupuesto } from '../types/presupuesto';
 import { formatCLP } from '../utils/currency';
 import { formatDate } from '../utils/date';
 import { loadImageAsDataUrl } from '../utils/image';
+import { useSettingsStore } from '../store/settings.store';
 
 export async function generatePresupuestoPDF(presupuesto: Presupuesto) {
+  const settings = useSettingsStore.getState().settings;
+
   const doc = new jsPDF();
   const dark = '#0f172a';
+  const blue = '#1d4ed8';
   const gray = '#64748b';
   const text = '#111827';
 
   const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
 
   try {
-    const watermark = await loadImageAsDataUrl('/logo-watermark.jpg', 0.3);
-
+    const watermark = await loadImageAsDataUrl('/logo-watermark.jpg', 0.08);
     const imgWidth = 92;
     const imgHeight = 92;
     const x = (pageWidth - imgWidth) / 2;
-    const y = 38;
+    const y = 36;
 
     doc.addImage(watermark, 'PNG', x, y, imgWidth, imgHeight);
   } catch (error) {
@@ -28,76 +30,66 @@ export async function generatePresupuestoPDF(presupuesto: Presupuesto) {
   }
 
   doc.setFillColor(dark);
-  doc.roundedRect(12, 10, 186, 24, 4, 4, 'F');
+  doc.roundedRect(12, 10, 186, 28, 4, 4, 'F');
 
   doc.setTextColor('#ffffff');
-  doc.setFontSize(18);
-  doc.text('MRCastle', 18, 22);
+  doc.setFontSize(17);
+  doc.text(settings.nombreEmpresa, 18, 20);
 
   doc.setFontSize(10);
-  doc.text('Presupuesto de trabajos mecánicos', 18, 28);
+  doc.text(settings.email, 18, 27);
 
-  doc.setTextColor(gray);
+  doc.setFontSize(11);
+  doc.text('Presupuesto de trabajos mecánicos', 18, 34);
+
+  doc.setTextColor('#cbd5e1');
   doc.setFontSize(10);
   doc.text(`N° ${presupuesto.numero}`, 150, 20);
-  doc.text(`Fecha ${formatDate(presupuesto.fechaCreacion)}`, 150, 26);
+  doc.text(`Fecha ${formatDate(presupuesto.fechaCreacion)}`, 150, 27);
 
-  let y = 44;
+  let y = 50;
 
-  doc.setTextColor(text);
-  doc.setFontSize(12);
-  doc.text('Empresa', 14, y);
-  y += 6;
-
-  doc.setFontSize(10);
-  doc.text(presupuesto.companySnapshot.nombreEmpresa, 14, y);
-  y += 5;
-  doc.text(presupuesto.companySnapshot.direccion, 14, y);
-  y += 5;
-  doc.text(
-    `${presupuesto.companySnapshot.telefono} · ${presupuesto.companySnapshot.email}`,
-    14,
-    y
-  );
-
-  y += 10;
+  doc.setTextColor(blue);
   doc.setFontSize(12);
   doc.text('Cliente', 14, y);
+  doc.text('Vehículo', 108, y);
+
   y += 6;
-
+  doc.setTextColor(text);
   doc.setFontSize(10);
-  doc.text(`Nombre: ${presupuesto.cliente.nombre}`, 14, y);
-  y += 5;
-  doc.text(`RUT: ${presupuesto.cliente.rut || '-'}`, 14, y);
-  y += 5;
-  doc.text(`Teléfono: ${presupuesto.cliente.telefono}`, 14, y);
-  y += 5;
-  doc.text(`Email: ${presupuesto.cliente.email}`, 14, y);
-  y += 5;
-  doc.text(`Dirección: ${presupuesto.cliente.direccion}`, 14, y);
 
-  y += 10;
-  doc.setFontSize(12);
-  doc.text('Vehículo', 14, y);
-  y += 6;
+  const clienteLines = [
+    `Nombre: ${presupuesto.cliente.nombre}`,
+    `RUT: ${presupuesto.cliente.rut || '-'}`,
+    `Teléfono: ${presupuesto.cliente.telefono}`,
+    `Email: ${presupuesto.cliente.email}`,
+    `Dirección: ${presupuesto.cliente.direccion}`
+  ];
 
-  doc.setFontSize(10);
-  doc.text(`Patente: ${presupuesto.vehiculo.patente}`, 14, y);
-  y += 5;
-  doc.text(
-    `Marca/Modelo: ${presupuesto.vehiculo.marca} ${presupuesto.vehiculo.modelo}`,
-    14,
-    y
-  );
-  y += 5;
-  doc.text(
-    `Año: ${presupuesto.vehiculo.anio || '-'} · Kilometraje: ${presupuesto.vehiculo.kilometraje || '-'}`,
-    14,
-    y
-  );
+  const vehiculoLines = [
+    `Patente: ${presupuesto.vehiculo.patente}`,
+    `Marca: ${presupuesto.vehiculo.marca}`,
+    `Modelo: ${presupuesto.vehiculo.modelo}`,
+    `Año: ${presupuesto.vehiculo.anio || '-'}`,
+    `Kilometraje: ${presupuesto.vehiculo.kilometraje || '-'}`
+  ];
+
+  let clienteY = y;
+  clienteLines.forEach((line) => {
+    doc.text(line, 14, clienteY);
+    clienteY += 5;
+  });
+
+  let vehiculoY = y;
+  vehiculoLines.forEach((line) => {
+    doc.text(line, 108, vehiculoY);
+    vehiculoY += 5;
+  });
+
+  const infoBottomY = Math.max(clienteY, vehiculoY) + 6;
 
   autoTable(doc, {
-    startY: y + 8,
+    startY: infoBottomY,
     head: [[
       'Descripción',
       'Tipo',
@@ -119,12 +111,22 @@ export async function generatePresupuestoPDF(presupuesto: Presupuesto) {
     theme: 'grid',
     headStyles: {
       fillColor: [15, 23, 42],
-      textColor: [255, 255, 255]
+      textColor: [255, 255, 255],
+      fontSize: 9
     },
     styles: {
       fontSize: 9,
       cellPadding: 3,
       textColor: [17, 24, 39]
+    },
+    columnStyles: {
+      0: { cellWidth: 54 },
+      1: { cellWidth: 22 },
+      2: { halign: 'center', cellWidth: 14 },
+      3: { halign: 'right', cellWidth: 25 },
+      4: { halign: 'right', cellWidth: 25 },
+      5: { halign: 'center', cellWidth: 22 },
+      6: { halign: 'right', cellWidth: 26 }
     }
   });
 
@@ -141,10 +143,17 @@ export async function generatePresupuestoPDF(presupuesto: Presupuesto) {
   doc.setFontSize(13);
   doc.text(`Total: ${formatCLP(presupuesto.totales.total)}`, 138, finalY + 10);
 
-  doc.setFontSize(10);
-  doc.text(`Observaciones: ${presupuesto.observaciones || '-'}`, 14, finalY + 22);
-  doc.text(`Condiciones: ${presupuesto.condicionesServicio || '-'}`, 14, finalY + 30);
+  const observaciones = presupuesto.observaciones?.trim()
+    ? presupuesto.observaciones
+    : '-';
 
+  const observacionesLines = doc.splitTextToSize(
+    `Observaciones: ${observaciones}`,
+    180
+  );
+
+  doc.setFontSize(10);
+  doc.text(observacionesLines, 14, finalY + 22);
 
   doc.save(`${presupuesto.numero}.pdf`);
 }

@@ -17,21 +17,34 @@ export default function PresupuestoMetaForm() {
           value={current.fechaCreacion.slice(0, 10)}
           onChange={(e) => updateCurrent({ fechaCreacion: new Date(e.target.value).toISOString() })}
         />
-        <Select label="Estado" value={current.estado} onChange={(e) => updateCurrent({ estado: e.target.value as any })}>
+
+        <Select
+          label="Estado"
+          value={current.estado}
+          onChange={(e) => updateCurrent({ estado: e.target.value as any })}
+        >
           <option value="Pendiente">Pendiente</option>
           <option value="Aprobado">Aprobado</option>
           <option value="Rechazado">Rechazado</option>
         </Select>
-        <Input label="Tiempo estimado de entrega" value={current.tiempoEntrega} onChange={(e) => updateCurrent({ tiempoEntrega: e.target.value })} />
-        <Input label="Número de presupuesto" value={current.numero} onChange={(e) => updateCurrent({ numero: e.target.value })} />
-        <div className="md:col-span-2">
-          <Textarea label="Observaciones" value={current.observaciones} onChange={(e) => updateCurrent({ observaciones: e.target.value })} />
-        </div>
+
+        <Input
+          label="Tiempo estimado de entrega"
+          value={current.tiempoEntrega}
+          onChange={(e) => updateCurrent({ tiempoEntrega: e.target.value })}
+        />
+
+        <Input
+          label="Número de presupuesto"
+          value={current.numero}
+          onChange={(e) => updateCurrent({ numero: e.target.value })}
+        />
+
         <div className="md:col-span-2">
           <Textarea
-            label="Condiciones del servicio"
-            value={current.condicionesServicio}
-            onChange={(e) => updateCurrent({ condicionesServicio: e.target.value })}
+            label="Observaciones"
+            value={current.observaciones}
+            onChange={(e) => updateCurrent({ observaciones: e.target.value })}
           />
         </div>
       </div>

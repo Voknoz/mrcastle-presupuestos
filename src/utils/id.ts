@@ -16,7 +16,6 @@ export const createEmptyPresupuesto = (): Presupuesto => ({
   estado: 'Pendiente',
   tiempoEntrega: '',
   observaciones: '',
-  condicionesServicio: 'Validez del presupuesto: 10 días. Repuestos sujetos a disponibilidad.',
   cliente: {
     nombre: '',
     rut: '',

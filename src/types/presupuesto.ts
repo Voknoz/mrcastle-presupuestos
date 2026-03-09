@@ -43,7 +43,6 @@ export interface Presupuesto {
   estado: EstadoPresupuesto;
   tiempoEntrega: string;
   observaciones: string;
-  condicionesServicio: string;
   cliente: Cliente;
   vehiculo: Vehiculo;
   items: PresupuestoItem[];
