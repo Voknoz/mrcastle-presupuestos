@@ -1,4 +1,4 @@
-import { Home, FileText } from 'lucide-react';
+import { ClipboardCheck, FileText, History, Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Button from '../ui/Button';
 import { useSettingsStore } from '../../store/settings.store';
@@ -8,27 +8,16 @@ export default function Header() {
   const settings = useSettingsStore((s) => s.settings);
 
   const isHome = pathname === '/';
-  const logoSrc = settings.logo?.trim() || '/logo-mrcastle.svg';
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
-        <Link to="/" className="flex min-w-0 items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white">
-            <img
-              src={logoSrc}
-              alt={settings.nombreEmpresa}
-              className="h-10 w-10 object-contain"
-            />
+        <Link to="/" className="min-w-0">
+          <div className="truncate text-xl font-bold text-slate-900">
+            {settings.nombreEmpresa}
           </div>
-
-          <div className="min-w-0 leading-tight">
-            <div className="truncate text-xl font-bold text-slate-900">
-              {settings.nombreEmpresa}
-            </div>
-            <div className="truncate text-sm text-slate-500">
-              Gestión de presupuestos mecánicos
-            </div>
+          <div className="truncate text-sm text-slate-500">
+            Gestión de presupuestos mecánicos
           </div>
         </Link>
 
@@ -41,6 +30,22 @@ export default function Header() {
               </Button>
             </Link>
           )}
+
+          <Link to="/recepcion/nueva">
+            <Button variant="secondary" className="px-3 md:px-4">
+              <ClipboardCheck size={18} className="mr-2" />
+              <span className="hidden sm:inline">Recepción</span>
+              <span className="sm:hidden">Recep.</span>
+            </Button>
+          </Link>
+
+          <Link to="/recepcion/historial">
+            <Button variant="secondary" className="px-3 md:px-4">
+              <History size={18} className="mr-2" />
+              <span className="hidden sm:inline">Historial recepción</span>
+              <span className="sm:hidden">Historial</span>
+            </Button>
+          </Link>
 
           <Link to="/presupuestos/nuevo">
             <Button className="px-3 md:px-4">
